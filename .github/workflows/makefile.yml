@@ -236,9 +236,67 @@ jobs:
           path: "*.AppImage"
           if-no-files-found: error
 
+  #
+  # Disable it for now!
+  #
+
+  # build-macos-portable:
+  #     runs-on: macos-14
+  #     steps:
+  #       - name: Checkout
+  #         uses: actions/checkout@v4
+  
+  #       - name: Install dependencies
+  #         run: |
+  #           brew update
+  #           brew install autoconf automake libtool flac id3lib libid3tag taglib boost dylibbundler
+  
+  #       - name: Configure
+  #         run: |
+  #           autoreconf -fiv
+  #           ./configure \
+  #             CPPFLAGS="-I/opt/homebrew/include" \
+  #             LDFLAGS="-L/opt/homebrew/lib -lboost_system -lboost_filesystem" \
+  #             --with-boost=/opt/homebrew \
+  #             --with-boost-libdir=/opt/homebrew/lib \
+  #             ax_cv_boost_base=yes \
+  #             ax_cv_boost_system=yes \
+  #             ax_cv_boost_filesystem=yes
+  
+  #       - name: Build
+  #         run: make -j"$(sysctl -n hw.ncpu)"
+  
+  #       - name: Create Portable Bundle
+  #         shell: bash
+  #         run: |
+  #           set -euo pipefail
+  #           mkdir -p dsf2flac-macos/bin dsf2flac-macos/libs
+  #           cp src/dsf2flac dsf2flac-macos/bin/
+  
+  #           echo "Bundling shared libraries..."
+  #           dylibbundler -od -b -x dsf2flac-macos/bin/dsf2flac \
+  #             -d dsf2flac-macos/libs/ \
+  #             -p @executable_path/../libs/ \
+  #             -s /opt/homebrew/lib
+  
+  #           echo "Creating archive..."
+  #           tar -czvf dsf2flac-macos-arm64.tar.gz dsf2flac-macos/
+  
+  #       - name: Upload macOS Artifact
+  #         uses: actions/upload-artifact@v4
+  #         with:
+  #           name: dsf2flac-macos-arm64
+  #           path: dsf2flac-macos-arm64.tar.gz
+  #           if-no-files-found: error
+
   release:
     needs:
       - build-linux-appimage
+
+      #
+      # Disable it for now!
+      #
+      # - build-macos-portable
 
     # Triggered by a version tag and manual runs.
     if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
