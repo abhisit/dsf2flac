@@ -6,6 +6,11 @@ on:
       - "v*"
 
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag to release in Arch Linux semantic versioning format'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -24,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag_name || github.ref }}
 
       - name: Install dependencies
         run: |
@@ -240,8 +247,8 @@ jobs:
     needs:
       - build-linux-appimage
 
-    # Triggered by a version tag and manual runs.
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    # Run release only if triggered by a version tag push or when a release tag is manually entered.
+    if: startsWith(inputs.tag_name || github.ref_name, 'v')
 
     runs-on: ubuntu-24.04
 
